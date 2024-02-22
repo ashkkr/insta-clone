@@ -66,6 +66,7 @@ function SignupBody() {
                 .then((data) => {
                     navigate('/home');
                     localStorage.setItem('token', 'Bearer ' + data.token)
+                    localStorage.setItem('userId', data.userId)
                 })
                 .catch((e) => {
                     console.error(e);

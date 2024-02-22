@@ -44,6 +44,7 @@ authRouter.post('/signup', async (req, res, next) => {
 
         return res.json({
             token: token,
+            userId: saveUser.id,
             message: "User created successfully"
         })
     }
@@ -73,6 +74,7 @@ authRouter.post('/login', async (req, res, next) => {
 
         return res.json({
             token: token,
+            userId: userexists.id,
             message: "User logged in successfully"
         });
     }

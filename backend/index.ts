@@ -4,6 +4,7 @@ import mongoose, { MongooseError } from "mongoose";
 import cors from "cors"
 import feedRouter from "./routes/feed";
 import postRouter from "./routes/createpost";
+import profileRouter from "./routes/profilepage";
 
 const errorHandler = async (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -22,9 +23,10 @@ const errorHandler = async (err: Error, req: Request, res: Response, next: NextF
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use('/auth', authRouter);
+app.use('/auth', authRouter)
 app.use('/feed', feedRouter)
 app.use('/create', postRouter)
+app.use('/profile', profileRouter)
 app.use(errorHandler);
 
 mongoose.connect('mongodb+srv://ashutoshsangra:4xj7hdS43aAv70PZ@cluster0.4ucnbnd.mongodb.net/',

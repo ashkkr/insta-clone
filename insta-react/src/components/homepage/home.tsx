@@ -1,18 +1,19 @@
-import { Box, Button, Card, CardBody, CardFooter, CardHeader, Center, Divider, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, useToast, Button, Card, CardBody, CardFooter, CardHeader, Center, Divider, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { ArrowForwardIcon } from "@chakra-ui/icons"
 import { Link } from "react-router-dom"
-import { useRecoilState } from "recoil"
-import { imageSelecteed, isCreateModal, nextClicked } from "../../atoms/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { imageSelecteed, imagefileselected, isCreateModal, nextClicked } from "../../atoms/atoms";
 import useUploadImage from "../../hooks/useUploadImage";
 import { useState } from "react";
 import { PostDataInterface } from "../../interfaces/postinterfaces";
 
 function Home() {
 
-    return <><Box display="flex" flexDirection="row" justifyContent="center" marginTop="2vh">
-        <FeedComponent></FeedComponent>
-        <SideDetails></SideDetails>
-    </Box>
+    return <>
+        <Box display="flex" flexDirection="row" justifyContent="center" marginTop="2vh">
+            <FeedComponent></FeedComponent>
+            <SideDetails></SideDetails>
+        </Box>
         <CreateModal></CreateModal>
         <CreateCaption></CreateCaption>
     </>
@@ -77,13 +78,12 @@ function SinglePost() {
 
 function CreateModal() {
     const [createModalValue, setCreateModalVal] = useRecoilState(isCreateModal);
-    const { handleImage, imagefile, setimagefile } = useUploadImage()
+    const { handleImage, imagedata, setimagedata } = useUploadImage()
     const [isnextClicked, setNextClicked] = useRecoilState(nextClicked)
 
-    console.log("in create modal", createModalValue);
     const handleCreateClose = () => {
         setCreateModalVal(false)
-        setimagefile("")
+        setimagedata("")
         setNextClicked(false)
     }
 
@@ -95,22 +95,22 @@ function CreateModal() {
         setNextClicked(true)
         setCreateModalVal(false)
     }
-    console.log("next clicked", isnextClicked);
+
     return <>
         <Modal isOpen={createModalValue && !isnextClicked} onClose={handleCreateClose}>
             <ModalOverlay></ModalOverlay>
             <ModalContent display="flex" boxSize="60vh">
                 <ModalHeader display={"flex"} flexDirection={"row"} alignItems={"center"} padding={"10px"}>
                     <Text flexGrow={1} textAlign="center" fontSize='small'>Create New Post</Text>
-                    {imagefile !== null && imagefile.toString().length > 0 ?
+                    {imagedata !== null && imagedata.length > 0 ?
                         <IconButton onClick={nextClick} height={"19.5px"} icon={<ArrowForwardIcon />} aria-label={""} bg={"transparent"} _hover={{ "backgroundColor": "transparent" }}></IconButton> :
                         <ModalCloseButton />
                     }
                 </ModalHeader>
                 <Divider></Divider>
                 <ModalBody flexGrow="1" padding="0">
-                    {imagefile !== null && imagefile.toString().length > 0 ?
-                        (<Image boxSize="" src={imagefile.toString()}></Image>) :
+                    {imagedata !== null && imagedata.length > 0 ?
+                        (<Image boxSize="" src={imagedata}></Image>) :
                         <Box position="relative" textAlign="center" top="40%" display="flex" flexDirection="column" gap="10px">
                             <Text>Drag photos and videos here</Text>
                             <Input onChange={handleImage} id="uploadinput" as="input" type="file" style={{ display: 'none' }}></Input>
@@ -125,46 +125,59 @@ function CreateModal() {
 
 function CreateCaption() {
     const [isNextClicked, setNextClicked] = useRecoilState(nextClicked)
-    const [imagefile, setimagefile] = useRecoilState(imageSelecteed);
+    const [imagedata, setimagedata] = useRecoilState(imageSelecteed);
     const [captionText, setCaptionText] = useState("")
+    const imagefile = useRecoilValue(imagefileselected)
+    const toast = useToast()
 
     const handleCreateClose = () => {
         setNextClicked(false)
-        setimagefile("")
+        setimagedata("")
     }
 
     const postImage = () => {
-        const imageFormData = new FormData()
+        if (localStorage.getItem('userId')) {
 
-        const postdata: PostDataInterface = {
-            userId: "1",
-            caption: captionText,
-            createdAt: Date.now()
-        }
+            const imageFormData = new FormData()
 
-        imageFormData.append('image', imagefile.toString())
-        imageFormData.append('postdata', JSON.stringify(postdata));
-
-        fetch("http://localhost/create/createpost", {
-            method: "POST",
-            body: imageFormData,
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Authorization": localStorage.getItem('token') ?? ""
+            const postdata: PostDataInterface = {
+                userId: localStorage.getItem('userId') as string,
+                caption: captionText,
+                createdAt: Date.now()
             }
-        })
-            .then((res) => {
-                if (res.ok) {
-                    return res.json()
+
+            imageFormData.append('postimage', imagefile)
+            imageFormData.append('postdata', JSON.stringify(postdata));
+
+            fetch("http://localhost:3000/create/createpost", {
+                method: "POST",
+                body: imageFormData,
+                headers: {
+                    "Authorization": localStorage.getItem('token') ?? ""
                 }
-                else return new Error("Post could not be shared")
             })
-            .then((data) => {
-                console.log("Posted")
-            })
-            .catch((e) => {
-                console.error(e);
-            })
+                .then((res) => {
+                    if (res.ok) {
+                        return res.json()
+                    }
+                    else return new Error("Post could not be shared")
+                })
+                .then((data) => {
+                    toast({
+                        title: data.message,
+                        status: 'success',
+                        isClosable: true
+                    })
+                    handleCreateClose()
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        }
+        else {
+            console.error(`User not logged in`)
+            //logout
+        }
     }
 
     return <>
@@ -177,10 +190,10 @@ function CreateCaption() {
                 </ModalHeader>
                 <Divider></Divider>
                 <ModalBody flexGrow="1" padding="0" display={"flex"} flexDirection={"row"}>
-                    {imagefile !== null && imagefile.toString().length > 0 ?
+                    {imagedata !== null && imagedata.toString().length > 0 ?
                         (
                             <Box>
-                                <Image boxSize="" src={imagefile.toString()}></Image>
+                                <Image boxSize="" src={imagedata.toString()}></Image>
                             </Box>)
                         : <></>
                     }

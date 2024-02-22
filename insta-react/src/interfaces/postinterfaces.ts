@@ -3,3 +3,10 @@ export interface PostDataInterface {
     userId: string,
     createdAt: Number
 }
+
+export interface MetaPostDataInterface {
+    imagePath: String,
+    countOfLikes: Number,
+    countOfComments: Number,
+    imageDataUrl: String
+}

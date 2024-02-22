@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { imageSelecteed } from "../atoms/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { imageSelecteed, imagefileselected } from "../atoms/atoms";
 
 function useUploadImage() {
-    const [imagefile, setimagefile] = useRecoilState(imageSelecteed);
+    const [imagedata, setimagedata] = useRecoilState(imageSelecteed);
+    const setimagefile = useSetRecoilState(imagefileselected);
     const fileSizeLimit = 2 * 1024 * 1024; // in Bytes
 
     const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,7 +14,8 @@ function useUploadImage() {
             if (file && file.type.startsWith("image/") && file.size <= fileSizeLimit) {
                 const reader = new FileReader()
                 reader.onloadend = () => {
-                    setimagefile(reader.result ?? "")
+                    setimagedata(reader.result?.toString() ?? "")
+                    setimagefile(file)
                 }
                 reader.readAsDataURL(file);
             }
@@ -26,7 +27,7 @@ function useUploadImage() {
             console.log("No file selected");
         }
     }
-    return { handleImage, imagefile, setimagefile }
+    return { handleImage, imagedata, setimagedata }
 }
 
 export default useUploadImage;

@@ -34,7 +34,8 @@ function LoginCard() {
             })
             .then((data) => {
                 navigate('/home')
-                localStorage.setItem('token', data.token)
+                localStorage.setItem('token', 'Bearer ' + data.token)
+                localStorage.setItem('userId', data.userId)
             })
             .catch((er) => {
                 console.error(er)

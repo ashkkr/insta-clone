@@ -8,5 +8,30 @@ export interface MetaPostDataInterface {
     imagePath: String,
     countOfLikes: Number,
     countOfComments: Number,
-    imageDataUrl: String
+    imageDataUrl: String,
+    displayLikes: boolean,
+    postId: String
+}
+
+export interface FullPostDetails {
+    postId: string,
+    caption: string,
+    userId: string,
+    createdAt: string,
+    imagepath: string,
+    likes: string[],
+    comments: commentPicInterface[]
+}
+
+export interface commentInterface {
+    commentId: string,
+    user: string,
+    createdAt: string,
+    text: string,
+    likes: string[]
+}
+
+export interface commentPicInterface extends commentInterface {
+    profilepic: string
+    isLiked: boolean
 }

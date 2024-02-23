@@ -1,8 +1,9 @@
 import express from "express"
 import { postModel, userModel } from "../schemas/authSchema";
 import path from "path"
-import { MetaPostDataInterface } from "../interfaces/postinterfaces";
+import { FullPostDetails, MetaPostDataInterface, commentInterface } from "../interfaces/postinterfaces";
 import { postImageCheck, postImageType } from "../zodobjects/profile";
+import { ObjectId } from "mongoose";
 const profileRouter = express.Router()
 
 profileRouter.get('/profiledetails', async (req, res, next) => {
@@ -13,11 +14,16 @@ profileRouter.get('/profiledetails', async (req, res, next) => {
                 _id: userId as string
             });
 
+            const postCount = await postModel.find({
+                userId: userId
+            }).countDocuments()
+
             return res.json({
                 username: userDetails?.username,
                 fullName: userDetails?.fullname,
                 countOfFollowers: userDetails?.followers.length,
                 countOfFollowing: userDetails?.following.length,
+                countOfPosts: postCount.toString(),
                 bio: userDetails?.bio
             })
         }
@@ -74,6 +80,7 @@ profileRouter.get('/myposts', async (req, res, next) => {
 
                 posts.forEach((val) => {
                     const singlePost: MetaPostDataInterface = {
+                        postId: val._id.toString(),
                         imagePath: val.imagepath,
                         countOfComments: val.comments.length,
                         countOfLikes: val.likes.length
@@ -84,7 +91,7 @@ profileRouter.get('/myposts', async (req, res, next) => {
                 return res.json(arrayOfPosts)
             }
             else {
-                return res.status(204)
+                return res.sendStatus(204)
             }
         }
         else {
@@ -127,5 +134,66 @@ profileRouter.post('/postimage', async (req, res, next) => {
         next(e)
     }
 })
+
+profileRouter.get('/fullpostdetails', async (req, res, next) => {
+    try {
+        const postId = req.query.postId;
+
+        if (postId) {
+            const postfulldetails = await postModel.findOne({ _id: postId })
+
+            const postDetailsObj: FullPostDetails = {
+                postId: postfulldetails?.id,
+                userId: postfulldetails?.userId.toString() ?? "0",
+                imagepath: postfulldetails?.imagepath ?? "",
+                caption: postfulldetails?.caption ?? "",
+                likes: postfulldetails?.likes.reduce((acc, val) => {
+                    acc.push(val.toString());
+                    return acc;
+                }, [] as string[]) ?? [] as string[],
+                comments: postfulldetails?.comments.reduce((acc, val) => {
+                    const tempComm: commentInterface = {
+                        commentId: val._id?.toString() as string,
+                        text: val.text ?? "",
+                        user: val.user?.toString() ?? "",
+                        username: "",
+                        createdAt: val.createdAt?.toString() ?? "",
+                        likes: val.likes.reduce((likeacc, likeval) => {
+                            likeacc.push(likeval.toString())
+                            return likeacc
+                        }, [] as string[]) ?? [] as string[]
+                    }
+                    acc.push(tempComm)
+                    return acc;
+                }, [] as commentInterface[]) ?? [] as commentInterface[],
+                createdAt: postfulldetails?.createdAt.toString() ?? ""
+            }
+            const finalResult: FullPostDetails = await addUsernameToComments(postDetailsObj)
+
+            return res.json(finalResult)
+        }
+        else {
+            return res.sendStatus(400)
+        }
+    }
+    catch (e) {
+        next(e)
+    }
+})
+
+async function addUsernameToComments(postDetailsObj: FullPostDetails): Promise<FullPostDetails> {
+    return new Promise((res, rej) => {
+        var numOfUsernamesadded: number = 0;
+        if (postDetailsObj.comments.length == 0) res(postDetailsObj)
+        postDetailsObj.comments.forEach(async (val) => {
+            const userdet = await userModel.findOne({
+                _id: val.user
+            })
+            val.username = userdet?.username as string
+            numOfUsernamesadded++
+            if (numOfUsernamesadded >= postDetailsObj.comments.length) res(postDetailsObj)
+        })
+    })
+}
 
 export default profileRouter

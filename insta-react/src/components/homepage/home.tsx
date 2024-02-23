@@ -34,7 +34,7 @@ function UserProfile() {
     </Box>
 }
 
-function ProfilePicture() {
+export function ProfilePicture() {
     return <Link to={'/myprofile'}>
         <Image boxSize="50px" borderRadius="full" src="/src/assets/AshutoshSangwan.jpg"></Image></Link>
 }

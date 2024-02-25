@@ -1,5 +1,5 @@
 import express from "express"
-import { postModel, userModel } from "../schemas/authSchema";
+import { commentModel, postModel, userModel } from "../schemas/authSchema";
 import path from "path"
 import { FullPostDetails, MetaPostDataInterface, commentInterface } from "../interfaces/postinterfaces";
 import { postImageCheck, postImageType } from "../zodobjects/profile";
@@ -78,15 +78,18 @@ profileRouter.get('/myposts', async (req, res, next) => {
             if (posts) {
                 const arrayOfPosts = new Array<MetaPostDataInterface>
 
-                posts.forEach((val) => {
+                for (var i = 0; i < posts.length; i++) {
+                    const comments = await commentModel.find({
+                        postId: posts[i]._id
+                    });
                     const singlePost: MetaPostDataInterface = {
-                        postId: val._id.toString(),
-                        imagePath: val.imagepath,
-                        countOfComments: val.comments.length,
-                        countOfLikes: val.likes.length
+                        postId: posts[i]._id.toString(),
+                        imagePath: posts[i].imagepath,
+                        countOfComments: comments?.length ?? 0,
+                        countOfLikes: posts[i].likes.length
                     }
                     arrayOfPosts.push(singlePost)
-                })
+                }
 
                 return res.json(arrayOfPosts)
             }
@@ -141,6 +144,7 @@ profileRouter.get('/fullpostdetails', async (req, res, next) => {
 
         if (postId) {
             const postfulldetails = await postModel.findOne({ _id: postId })
+            const commentdetails = await commentModel.find({ postId: postId })
 
             const postDetailsObj: FullPostDetails = {
                 postId: postfulldetails?.id,
@@ -151,14 +155,14 @@ profileRouter.get('/fullpostdetails', async (req, res, next) => {
                     acc.push(val.toString());
                     return acc;
                 }, [] as string[]) ?? [] as string[],
-                comments: postfulldetails?.comments.reduce((acc, val) => {
+                comments: commentdetails?.reduce((acc, val) => {
                     const tempComm: commentInterface = {
                         commentId: val._id?.toString() as string,
-                        text: val.text ?? "",
-                        user: val.user?.toString() ?? "",
+                        text: val.text as string ?? "",
+                        user: val.userId?.toString() ?? "",
                         username: "",
-                        createdAt: val.createdAt?.toString() ?? "",
-                        likes: val.likes.reduce((likeacc, likeval) => {
+                        createdAt: val.createdAt.toString() as string ?? "",
+                        commentlikes: val.commentlikes?.reduce((likeacc, likeval) => {
                             likeacc.push(likeval.toString())
                             return likeacc
                         }, [] as string[]) ?? [] as string[]

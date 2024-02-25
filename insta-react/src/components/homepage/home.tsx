@@ -2,15 +2,20 @@ import { Box, useToast, Button, Card, CardBody, CardFooter, CardHeader, Center, 
 import { ArrowForwardIcon } from "@chakra-ui/icons"
 import { Link } from "react-router-dom"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { imageSelecteed, imagefileselected, isCreateModal, nextClicked } from "../../atoms/atoms";
+import { imageSelecteed, imagefileselected, isCreateModal, nextClicked, profileDetails, profileimageurl } from "../../atoms/atoms";
 import useUploadImage from "../../hooks/useUploadImage";
 import { useState } from "react";
 import { PostDataInterface } from "../../interfaces/postinterfaces";
+import { useProfileDetails } from "../../hooks/useProfileDetails";
 
 function Home() {
-
     return <>
-        <Box display="flex" flexDirection="row" justifyContent="center" marginTop="2vh">
+        <Box width={"60vw"}
+            display="flex"
+            flexDirection="row"
+            justifyContent="center"
+            marginTop="2vh"
+            gap={"2rem"}>
             <FeedComponent></FeedComponent>
             <SideDetails></SideDetails>
         </Box>
@@ -28,21 +33,26 @@ function SideDetails() {
 }
 
 function UserProfile() {
+    useProfileDetails()
+    const profileDetailsVal = useRecoilValue(profileDetails)
+    const profilePicVal = useRecoilValue(profileimageurl)
+    console.log(profileDetailsVal)
     return <Box minWidth="200px" display="flex" flexDirection="row" padding="5" alignItems="center">
-        <ProfilePicture></ProfilePicture>
-        <Username></Username>
+        <ProfilePicture url={profilePicVal}></ProfilePicture>
+        <Username details={profileDetailsVal}></Username>
     </Box>
 }
 
-export function ProfilePicture() {
+export function ProfilePicture(props: any) {
     return <Link to={'/myprofile'}>
-        <Image boxSize="50px" borderRadius="full" src="/src/assets/AshutoshSangwan.jpg"></Image></Link>
+        <Image boxSize="50px" borderRadius="full" src={props.url}></Image>
+    </Link>
 }
 
-function Username() {
+function Username(props: any) {
     return <Box flexGrow="1" marginLeft={5}>
-        <Text fontSize="small" fontWeight="600">username</Text>
-        <Text fontSize="small" fontWeight="300">Name User</Text>
+        <Text fontSize="small" fontWeight="600">{props.details.username}</Text>
+        <Text fontSize="small" fontWeight="300">{props.details.fullName}</Text>
     </Box>
 }
 
@@ -57,7 +67,6 @@ function FeedComponent() {
         <SinglePost></SinglePost>
         <SinglePost></SinglePost>
     </Box>
-
 }
 
 function SinglePost() {

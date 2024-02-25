@@ -99,6 +99,7 @@ export const postFullDetails = atom<FullPostDetails>({
         createdAt: "",
         imagepath: "",
         likes: [],
-        comments: []
+        comments: [],
+        isPostLiked: false
     }
 })

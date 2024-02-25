@@ -20,6 +20,7 @@ export interface FullPostDetails {
     createdAt: string,
     imagepath: string,
     likes: string[],
+    isPostLiked: boolean,
     comments: commentPicInterface[]
 }
 
@@ -28,7 +29,7 @@ export interface commentInterface {
     user: string,
     createdAt: string,
     text: string,
-    likes: string[]
+    commentlikes: string[]
 }
 
 export interface commentPicInterface extends commentInterface {

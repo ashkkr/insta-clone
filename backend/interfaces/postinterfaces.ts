@@ -13,7 +13,7 @@ export interface commentInterface {
     username: string,
     createdAt: string,
     text: string,
-    likes: string[]
+    commentlikes: string[]
 }
 
 

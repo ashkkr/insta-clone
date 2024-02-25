@@ -45,25 +45,17 @@ const postschema = new mongoose.Schema({
         type: String,
         required: true
     },
-    likes: [{
-        type: Schema.Types.ObjectId,
-        ref: 'userModel'
-    }],
-    comments: [{
-        user: {
-            type: Schema.Types.ObjectId,
-            ref: 'userModel'
-        },
-        text: String,
-        createdAt: {
-            type: Date,
-            default: Date.now
-        },
-        likes: [{
-            type: Schema.Types.ObjectId,
-            ref: 'userModel'
-        }]
-    }],
+    likes: {
+        type: [Types.ObjectId],
+        ref: 'userModel',
+        validate: {
+            validator: function (array: Types.ObjectId[]) {
+                const setSize = array.map(val => val.toString())
+                return array.length === new Set(setSize).size
+            },
+            message: 'User is already in array'
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -73,4 +65,40 @@ const postschema = new mongoose.Schema({
         collection: 'posts'
     });
 
+
+
 export const postModel = mongoose.model('postmodel', postschema)
+
+const commentSchema = new mongoose.Schema({
+    userId: {
+        type: Types.ObjectId,
+        require: true,
+        ref: 'userModel'
+    },
+    postId: {
+        type: Types.ObjectId,
+        require: true,
+        ref: 'postModel'
+    },
+    text: {
+        type: String
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    commentlikes: {
+        type: [Types.ObjectId],
+        ref: 'userModel',
+        validate: {
+            validator: function (array: Types.ObjectId[]) {
+                const setSize = array.map(val => val.toString())
+                return array.length === new Set(setSize).size
+            },
+            message: 'User is already in array'
+        }
+    }
+},
+    { collection: 'comments' })
+
+export const commentModel = mongoose.model('commentmodel', commentSchema)

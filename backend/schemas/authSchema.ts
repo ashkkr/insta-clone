@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     bio: String,
     profilepicture: String,
-    followers: [{ type: Types.ObjectId, ref: 'userModel' }],
-    following: [{ type: Types.ObjectId, ref: 'userModel' }]
+    followers: { type: [Types.ObjectId], ref: 'userModel' },
+    following: { type: [Types.ObjectId], ref: 'userModel' }
 },
     {
         collection: 'users'

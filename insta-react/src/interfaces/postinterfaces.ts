@@ -4,12 +4,14 @@ export interface PostDataInterface {
     createdAt: Number
 }
 
-export interface MetaPostDataInterface {
+export interface PostImageInterface {
     imagePath: String,
+    imageDataUrl: String
+}
+
+export interface MetaPostDataInterface extends PostImageInterface {
     countOfLikes: Number,
     countOfComments: Number,
-    imageDataUrl: String,
-    displayLikes: boolean,
     postId: String
 }
 
@@ -18,7 +20,7 @@ export interface FullPostDetails {
     caption: string,
     userId: string,
     createdAt: string,
-    imagepath: string,
+    imagePath: string,
     likes: string[],
     isPostLiked: boolean,
     comments: commentPicInterface[]
@@ -36,3 +38,12 @@ export interface commentPicInterface extends commentInterface {
     profilepic: string
     isLiked: boolean
 }
+
+export interface FeedPostDetails extends FullPostDetails {
+    username: string,
+    commentCount: number,
+    isUserFollowed: boolean,
+    imageDataUrl: string
+}
+
+export type ProfileTuple = [string, string] // userId to profilePicture

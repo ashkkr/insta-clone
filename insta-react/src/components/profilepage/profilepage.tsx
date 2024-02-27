@@ -6,6 +6,7 @@ import { usePostDetails, usePostFullDetails } from "../../hooks/usePostDetails";
 import { ChatIcon, StarIcon } from "@chakra-ui/icons"
 import { MetaPostDataInterface } from "../../interfaces/postinterfaces";
 import { useEffect, useRef, useState } from "react";
+import { useLikeUnlikePost } from "../../hooks/useLikeUnlike";
 
 function ProfilePage() {
     return <Box>
@@ -90,7 +91,7 @@ function IndividualPost(props: any) {
     </Box>
 }
 
-function PostModalView() {
+export function PostModalView() {
     const [postModalOpen, setPostModalOpen] = useRecoilState(postModalView)
     const [postDetails, setPostDetails] = useRecoilState(focusedPost)
     const [postFullDetailsVal, setpostFullDetails] = useRecoilState(postFullDetails)
@@ -153,11 +154,12 @@ function PostModalView() {
 
 function CommentFooter() {
     const postFullDetailsVal = useRecoilValue(postFullDetails)
-    const [postLikes, setpostlikes] = useState<number>()
+    const [postLikes, setpostlikes] = useState<number>(0)
     const [postLiked, setPostLiked] = useState<boolean>(false)
     const [commentText, setCommentText] = useState<string>("")
     const { refreshPost } = usePostFullDetails(postFullDetailsVal.postId)
     const inputRef = useRef<HTMLInputElement>(null)
+    const { likeunlikepost } = useLikeUnlikePost(postFullDetailsVal.postId, setPostLiked, postLikes, setpostlikes)
 
     useEffect(() => {
         setpostlikes(postFullDetailsVal.likes.length)
@@ -195,40 +197,9 @@ function CommentFooter() {
             })
     }
 
-    const likeunlikepost = () => {
-        if (postLiked) {
-            //unliking post
-            setPostLiked(false)
-            fetch('http://localhost:3000/post/unlikepost', {
-                method: "POST",
-                body: JSON.stringify({
-                    postId: postFullDetailsVal.postId
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'userId': localStorage.getItem('userId') ?? ""
-                }
-            })
-        }
-        else {
-            // liking  post
-            setPostLiked(true)
-            fetch('http://localhost:3000/post/likepost', {
-                method: "POST",
-                body: JSON.stringify({
-                    postId: postFullDetailsVal.postId
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'userId': localStorage.getItem('userId') ?? ""
-                }
-            })
-        }
-    }
-
     return <>
         <Box display={"flex"} flexDirection={"row"} gap={"1rem"} padding={"0.5rem 0.5rem 0 0.5rem"} alignContent={"center"}>
-            <StarIcon onClick={likeunlikepost} color={postLiked ? "red.500" : "grey"} cursor={"pointer"} />
+            <StarIcon onClick={() => likeunlikepost(postLiked)} color={postLiked ? "red.500" : "grey"} cursor={"pointer"} />
             <ChatIcon cursor={"pointer"} onClick={focusOnCommentInput} />
         </Box>
         <Box padding={"0.5rem"}>

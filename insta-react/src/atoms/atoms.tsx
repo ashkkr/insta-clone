@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { loginInterface, signupInterface } from "../interfaces/authInterfaces";
 import { ProfileInterface } from "../interfaces/userInterfaces";
-import { FullPostDetails, MetaPostDataInterface, PostDataInterface } from "../interfaces/postinterfaces";
+import { FullPostDetails, MetaPostDataInterface, PostDataInterface, ProfileTuple } from "../interfaces/postinterfaces";
 
 export const inputOutlineColor = atom({
     key: 'inputoutlinecolor',
@@ -80,7 +80,6 @@ export const focusedPost = atom<MetaPostDataInterface>({
         countOfLikes: 0,
         countOfComments: 0,
         imageDataUrl: "",
-        displayLikes: false,
         postId: ""
     }
 })
@@ -97,9 +96,14 @@ export const postFullDetails = atom<FullPostDetails>({
         caption: "",
         userId: "",
         createdAt: "",
-        imagepath: "",
+        imagePath: "",
         likes: [],
         comments: [],
         isPostLiked: false
     }
+})
+
+export const profilePictures = atom<Map<string, string>>({
+    key: 'profilepicturesdictionary',
+    default: new Map<string, string>()
 })

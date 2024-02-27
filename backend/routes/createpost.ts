@@ -17,7 +17,7 @@ postRouter.post('/createpost', uploadPostImage.single('postimage'), async (req, 
                 userId: userId,
                 caption: caption,
                 createdAt: createdAt,
-                imagepath: req.file?.filename,
+                imagePath: req.file?.filename,
                 likes: [],
                 comments: []
             }

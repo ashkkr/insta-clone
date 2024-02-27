@@ -149,7 +149,7 @@ profileRouter.get('/fullpostdetails', async (req, res, next) => {
             const postDetailsObj: FullPostDetails = {
                 postId: postfulldetails?.id,
                 userId: postfulldetails?.userId.toString() ?? "0",
-                imagepath: postfulldetails?.imagepath ?? "",
+                imagePath: postfulldetails?.imagepath ?? "",
                 caption: postfulldetails?.caption ?? "",
                 likes: postfulldetails?.likes.reduce((acc, val) => {
                     acc.push(val.toString());

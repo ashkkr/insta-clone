@@ -1,12 +1,17 @@
 import { Box, useToast, Button, Card, CardBody, CardFooter, CardHeader, Center, Divider, IconButton, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
-import { ArrowForwardIcon } from "@chakra-ui/icons"
+import { ArrowForwardIcon, StarIcon, ChatIcon } from "@chakra-ui/icons"
 import { Link } from "react-router-dom"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { imageSelecteed, imagefileselected, isCreateModal, nextClicked, profileDetails, profileimageurl } from "../../atoms/atoms";
+import { focusedPost, imageSelecteed, imagefileselected, isCreateModal, nextClicked, postModalView, profileDetails, profilePictures, profileimageurl } from "../../atoms/atoms";
 import useUploadImage from "../../hooks/useUploadImage";
-import { useState } from "react";
-import { PostDataInterface } from "../../interfaces/postinterfaces";
+import { useEffect, useRef, useState } from "react";
+import { MetaPostDataInterface, PostDataInterface } from "../../interfaces/postinterfaces";
 import { useProfileDetails } from "../../hooks/useProfileDetails";
+import { useGetFeed, useTestRender } from "../../hooks/useGetFeed";
+import { useProfilePicture } from "../../hooks/useProfilePicture";
+import { useLikeUnlikePost } from "../../hooks/useLikeUnlike";
+import { usePostFullDetails } from "../../hooks/usePostDetails";
+import { PostModalView } from "../profilepage/profilepage";
 
 function Home() {
     return <>
@@ -21,6 +26,7 @@ function Home() {
         </Box>
         <CreateModal></CreateModal>
         <CreateCaption></CreateCaption>
+        <PostModalView></PostModalView>
     </>
 }
 
@@ -36,7 +42,7 @@ function UserProfile() {
     useProfileDetails()
     const profileDetailsVal = useRecoilValue(profileDetails)
     const profilePicVal = useRecoilValue(profileimageurl)
-    console.log(profileDetailsVal)
+
     return <Box minWidth="200px" display="flex" flexDirection="row" padding="5" alignItems="center">
         <ProfilePicture url={profilePicVal}></ProfilePicture>
         <Username details={profileDetailsVal}></Username>
@@ -62,24 +68,82 @@ function Suggestedtofollow() {
     </Card>
 }
 
+// to check is state change inside a custom hook re-renders the component -> yes it does
+function TestComponent() {
+    const { testRender } = useTestRender()
+    const renderCount = useRef(0)
+    renderCount.current = renderCount.current + 1
+
+    return <Text>{renderCount.current + "counts"}</Text>
+}
+
 function FeedComponent() {
+    const { refreshFeed, userFeed } = useGetFeed()
+    const renderCounter = useRef(0)
+    renderCounter.current = renderCounter.current + 1
+    useEffect(() => {
+        refreshFeed()
+    }, [])
+
     return <Box>
-        <SinglePost></SinglePost>
-        <SinglePost></SinglePost>
+        {userFeed.map((val) => {
+            return <SinglePost details={val}></SinglePost>
+        })}
     </Box>
 }
 
-function SinglePost() {
-    return <Box width="30vw" height="70vh">
+function SinglePost(props: any) {
+    const profilePicMap = useRecoilValue(profilePictures)
+    const [isPostLiked, setPostLiked] = useState<boolean>(props.details.isPostLiked)
+    const [numLikes, setNumLikes] = useState<number>(props.details.likeCount)
+    const numComments = props.details.commentCount;
+    const { likeunlikepost } = useLikeUnlikePost(props.details.postId, setPostLiked, numLikes, setNumLikes)
+    const { refreshPost } = usePostFullDetails(props.details.postId)
+    const setPostModalOpen = useSetRecoilState(postModalView)
+    const setFocusedPost = useSetRecoilState(focusedPost)
+
+
+    const openModal = (val: string) => {
+        const fillerVal: MetaPostDataInterface = {
+            countOfLikes: 0,
+            countOfComments: 0,
+            postId: "",
+            imagePath: "",
+            imageDataUrl: val
+        }
+        setFocusedPost(fillerVal)
+        refreshPost()
+        setPostModalOpen(true)
+    }
+
+    return <Box width="30vw">
         <Card>
-            <CardHeader>
-                <Text>I posted this</Text>
+            <CardHeader padding={"1rem"} display={"flex"} flexDirection={"row"} gap={"0.8rem"} alignItems={"center"}>
+                <Image
+                    src={profilePicMap.get(props.details.userId) ?? ""}
+                    boxSize={"2rem"}
+                    borderRadius={"full"}
+                ></Image>
+                <Text fontSize="small" fontWeight="600">{props.details.username}</Text>
             </CardHeader>
-            <CardBody>
-                This is my picture
+            <CardBody padding={"0"}>
+                <Image src={props.details.imageDataUrl}></Image>
             </CardBody>
-            <CardFooter>
-                Like here
+            <CardFooter display={"flex"} flexDirection={"column"} padding={"1rem 0.3rem"}>
+                <Box display={"flex"} flexDirection={"row"} gap={"1rem"} alignContent={"center"}>
+                    <StarIcon onClick={() => likeunlikepost(isPostLiked)} color={isPostLiked ? "red.500" : " grey"} cursor={"pointer"} />
+                    <ChatIcon onClick={() => openModal(props.details.imageDataUrl)} cursor={"pointer"} />
+                </Box>
+                <Box padding={"0.5rem 0 0.3rem 0"}>
+                    <Text fontSize={"small"} fontWeight={"600"}>{numLikes ?? 0} likes</Text>
+                </Box>
+                <Box>
+                    <Text fontSize={"small"}><span style={{ fontWeight: "600" }}>{props.details.username}</span>  {props.details.caption}</Text>
+                    {numComments > 0 ?
+                        <Text cursor={"pointer"} fontSize={"small"} fontWeight={"400"} color={"grey"}>View all {numComments} {numComments > 1 ? "comments" : "comment"}</Text> :
+                        <Text cursor={"pointer"} fontSize={"small"} fontWeight={"400"} color={"grey"}>Add a comment</Text>
+                    }
+                </Box>
             </CardFooter>
         </Card>
     </Box>

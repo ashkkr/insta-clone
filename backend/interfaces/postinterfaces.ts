@@ -2,7 +2,7 @@ export interface PostDataBackendInterface {
     caption: string,
     userId: string,
     createdAt: string,
-    imagepath: string,
+    imagePath: string,
     likes: string[],
     comments: commentInterface[]
 }
@@ -30,4 +30,13 @@ export interface FullPostDetails extends PostDataBackendInterface {
 
 export interface commentPicInterface extends commentInterface {
     profilepic: String
+}
+
+export interface FeedPostDetails extends FullPostDetails {
+    username: string,
+    commentCount: number,
+    likeCount: number,
+    isUserFollowed: boolean,
+    imageDataUrl: string,
+    isPostLiked: boolean
 }

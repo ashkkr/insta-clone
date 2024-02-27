@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { FullPostDetails, MetaPostDataInterface, commentInterface, commentPicInterface } from "../interfaces/postinterfaces";
+import { FullPostDetails, MetaPostDataInterface, PostImageInterface, commentInterface, commentPicInterface } from "../interfaces/postinterfaces";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { postFullDetails, profilePosts } from "../atoms/atoms";
 
@@ -19,21 +19,20 @@ function checkCommentInterface(comment: any): comment is commentInterface {
         'commentlikes' in comment && Array.isArray(comment.commentlikes) && comment.commentlikes.every((val: any) => typeof val === 'string')
 }
 
-function checkFullPostInterface(post: any): post is FullPostDetails {
+export function checkFullPostInterface(post: any): post is FullPostDetails {
     return 'postId' in post && typeof post.postId === 'string' &&
         'caption' in post && typeof post.caption === 'string' &&
         'userId' in post && typeof post.userId === 'string' &&
         'createdAt' in post && typeof post.createdAt === 'string' &&
-        'imagepath' in post && typeof post.imagepath === 'string' &&
+        'imagePath' in post && typeof post.imagePath === 'string' &&
         'likes' in post && Array.isArray(post.likes) && post.likes.every((item: string) => typeof item === 'string') &&
         'comments' in post && Array.isArray(post.comments) && post.comments.every((item: commentInterface) => checkCommentInterface(item))
 }
 
-async function imageToDataUrl(data: Array<MetaPostDataInterface>) {
+export function imageToDataUrl<T extends PostImageInterface>(data: Array<T>) {
     const completionPromise = new Promise<void>((res, rej) => {
         var countOfImages = data.length
         data.forEach((val) => {
-            val.displayLikes = false;
             fetch('http://localhost:3000/profile/postimage', {
                 method: "POST",
                 body: JSON.stringify({

@@ -23,7 +23,9 @@ export interface FullPostDetails {
     imagePath: string,
     likes: string[],
     isPostLiked: boolean,
-    comments: commentPicInterface[]
+    comments: commentPicInterface[],
+    imageDataUrl: string,
+    username: string
 }
 
 export interface commentInterface {
@@ -40,7 +42,6 @@ export interface commentPicInterface extends commentInterface {
 }
 
 export interface FeedPostDetails extends FullPostDetails {
-    username: string,
     commentCount: number,
     isUserFollowed: boolean,
     imageDataUrl: string

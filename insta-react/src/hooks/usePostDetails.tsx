@@ -68,13 +68,14 @@ export function imageToDataUrl<T extends PostImageInterface>(data: Array<T>) {
     return completionPromise
 }
 
-export function usePostDetails() {
+export function usePostDetails(userId: string) {
     const [profileposts, setprofileposts] = useRecoilState(profilePosts)
     useEffect(() => {
+        if (userId == "me" || userId == "") userId = localStorage.getItem('userId') ?? ""
         fetch("http://localhost:3000/profile/myposts", {
             method: 'GET',
             headers: {
-                "userId": localStorage.getItem('userId') ?? ""
+                "userId": userId ?? ""
             }
         })
             .then(res => {
@@ -108,7 +109,8 @@ async function getCommentPicDetails(data: FullPostDetails): Promise<commentPicIn
             fetch('http://localhost:3000/profile/profileimage', {
                 method: 'GET',
                 headers: {
-                    'userId': val.user
+                    'userId': localStorage.getItem('userId') ?? "",
+                    'profileId': val.user
                 }
             })
                 .then(res => {
@@ -140,7 +142,7 @@ async function getCommentPicDetails(data: FullPostDetails): Promise<commentPicIn
     })
 }
 
-export function usePostFullDetails(postId: string) {
+export function usePostFullDetails(postId: string, username: string) {
     const setPostFullDetails = useSetRecoilState(postFullDetails)
 
     const refreshPost = () => {
@@ -163,12 +165,10 @@ export function usePostFullDetails(postId: string) {
                     const commentsWithPic: commentPicInterface[] = await getCommentPicDetails(data)
                     const myuserid = localStorage.getItem('userId') as string
                     if (data.likes.some((val) => val === myuserid)) {
-                        setPostFullDetails({ ...data, isPostLiked: true, comments: commentsWithPic })
-                        console.log({ ...data, isPostLiked: true, comments: commentsWithPic })
+                        setPostFullDetails({ ...data, isPostLiked: true, comments: commentsWithPic, username: username })
                     }
                     else {
-                        setPostFullDetails({ ...data, isPostLiked: false, comments: commentsWithPic })
-                        console.log({ ...data, isPostLiked: false, comments: commentsWithPic })
+                        setPostFullDetails({ ...data, isPostLiked: false, comments: commentsWithPic, username: username })
                     }
                 }
                 else {

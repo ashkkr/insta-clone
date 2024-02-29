@@ -4,5 +4,11 @@ export interface ProfileInterface {
     countOfFollowing: number,
     username: string,
     fullName: string,
-    bio: String
+    bio: String,
+    isUserFollowed: boolean
+}
+
+export interface SuggestUserInterface {
+    userId: string,
+    username: string
 }

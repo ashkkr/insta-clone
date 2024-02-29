@@ -59,7 +59,8 @@ export const profileDetails = atom<ProfileInterface>({
         countOfFollowing: -1,
         fullName: "",
         bio: "",
-        countOfPosts: -1
+        countOfPosts: -1,
+        isUserFollowed: false
     }
 });
 
@@ -73,16 +74,16 @@ export const profilePosts = atom<Array<MetaPostDataInterface>>({
     default: new Array<MetaPostDataInterface>()
 })
 
-export const focusedPost = atom<MetaPostDataInterface>({
-    key: 'focusedpost',
-    default: {
-        imagePath: "",
-        countOfLikes: 0,
-        countOfComments: 0,
-        imageDataUrl: "",
-        postId: ""
-    }
-})
+// export const focusedPost = atom<MetaPostDataInterface>({
+//     key: 'focusedpost',
+//     default: {
+//         imagePath: "",
+//         countOfLikes: 0,
+//         countOfComments: 0,
+//         imageDataUrl: "",
+//         postId: ""
+//     }
+// })
 
 export const postModalView = atom<boolean>({
     key: 'postmodalview',
@@ -99,11 +100,23 @@ export const postFullDetails = atom<FullPostDetails>({
         imagePath: "",
         likes: [],
         comments: [],
-        isPostLiked: false
+        isPostLiked: false,
+        imageDataUrl: "",
+        username: ""
     }
 })
 
 export const profilePictures = atom<Map<string, string>>({
     key: 'profilepicturesdictionary',
     default: new Map<string, string>()
+})
+
+export const modalPostImageDataUrl = atom<string>({
+    key: 'modalpostdataurl',
+    default: ""
+})
+
+export const modalProfilePic = atom<boolean>({
+    key: 'profilemodalpic',
+    default: false
 })

@@ -13,11 +13,11 @@ postRouter.post('/createpost', uploadPostImage.single('postimage'), async (req, 
         const { userId, caption, createdAt } = JSON.parse(req.body.postdata);
         console.log(req.file)
         if (req.file) {
-            const newpostobject: PostDataBackendInterface = {
+            const newpostobject = {
                 userId: userId,
                 caption: caption,
                 createdAt: createdAt,
-                imagePath: req.file?.filename,
+                imagepath: req.file?.filename,
                 likes: [],
                 comments: []
             }

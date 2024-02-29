@@ -21,8 +21,28 @@ const userSchema = new mongoose.Schema({
     },
     bio: String,
     profilepicture: String,
-    followers: { type: [Types.ObjectId], ref: 'userModel' },
-    following: { type: [Types.ObjectId], ref: 'userModel' }
+    followers: {
+        type: [Types.ObjectId],
+        ref: 'userModel',
+        validate: {
+            validator: function (array: Types.ObjectId[]) {
+                const setSize = array.map(val => val.toString())
+                return array.length === new Set(setSize).size
+            },
+            message: 'User is already in array'
+        }
+    },
+    following: {
+        type: [Types.ObjectId],
+        ref: 'userModel',
+        validate: {
+            validator: function (array: Types.ObjectId[]) {
+                const setSize = array.map(val => val.toString())
+                return array.length === new Set(setSize).size
+            },
+            message: 'User is already in array'
+        }
+    }
 },
     {
         collection: 'users'

@@ -26,12 +26,13 @@ export function useProfilePicture() {
 }
 
 
-function fetchProfilePicture(userId: string) {
+function fetchProfilePicture(profileId: string) {
     return new Promise<string>((res, rej) => {
         fetch('http://localhost:3000/profile/profileimage', {
             method: 'GET',
             headers: {
-                'userId': userId ?? ""
+                'userId': localStorage.getItem('userId') ?? "",
+                'profileId': profileId
             }
         })
             .then(res => {

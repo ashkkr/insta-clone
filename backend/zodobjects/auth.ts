@@ -15,3 +15,7 @@ export const loginCheck = z.object({
 });
 
 export type logintype = z.infer<typeof loginCheck>;
+
+export const userIdCheck = z.object({
+    userId: z.string().max(40)
+})

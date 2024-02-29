@@ -4,27 +4,36 @@ import path from "path"
 import { FullPostDetails, MetaPostDataInterface, commentInterface } from "../interfaces/postinterfaces";
 import { postImageCheck, postImageType } from "../zodobjects/profile";
 import { ObjectId } from "mongoose";
+import { userIdCheck } from "../zodobjects/auth";
+import multer from "multer";
 const profileRouter = express.Router()
+
+const profileUploads = multer({
+    dest: 'profile-pics/'
+})
 
 profileRouter.get('/profiledetails', async (req, res, next) => {
     try {
         const userId = req.get('userId')
-        if (userId) {
-            const userDetails = await userModel.findOne({
-                _id: userId as string
+        const profileId = req.get('profileId')
+
+        if (userId && profileId) {
+            const profileDetails = await userModel.findOne({
+                _id: profileId as string
             });
 
             const postCount = await postModel.find({
-                userId: userId
+                userId: profileId
             }).countDocuments()
 
             return res.json({
-                username: userDetails?.username,
-                fullName: userDetails?.fullname,
-                countOfFollowers: userDetails?.followers.length,
-                countOfFollowing: userDetails?.following.length,
+                username: profileDetails?.username,
+                fullName: profileDetails?.fullname,
+                countOfFollowers: profileDetails?.followers.length,
+                countOfFollowing: profileDetails?.following.length,
                 countOfPosts: postCount.toString(),
-                bio: userDetails?.bio
+                bio: profileDetails?.bio,
+                isUserFollowed: profileDetails?.followers.some(val => val.toString() == userId.toString())
             })
         }
         else {
@@ -38,10 +47,10 @@ profileRouter.get('/profiledetails', async (req, res, next) => {
 
 profileRouter.get('/profileimage', async (req, res, next) => {
     try {
-        const userId = req.get('userId')
-        if (userId) {
+        const profileId = req.get('profileId')
+        if (profileId) {
             const userDetails = await userModel.findOne({
-                _id: userId as string
+                _id: profileId as string
             });
 
             const dirname = path.join(__dirname, '..', '..', '/profile-pics')
@@ -178,6 +187,62 @@ profileRouter.get('/fullpostdetails', async (req, res, next) => {
         }
         else {
             return res.sendStatus(400)
+        }
+    }
+    catch (e) {
+        next(e)
+    }
+})
+
+profileRouter.delete('/deleteprofilepic', async (req, res, next) => {
+    try {
+        const userId = req.get('userId')
+
+        const updatedDoc = await userModel.findOneAndUpdate({
+            _id: userId
+        }, {
+            $set: { profilepicture: "" }
+        }, {
+            new: true
+        })
+
+        if (updatedDoc) {
+            return res.sendStatus(200)
+        }
+        else {
+            return res.sendStatus(404)
+        }
+
+    }
+    catch (e) {
+        next(e)
+    }
+})
+
+profileRouter.post('/setprofilepicture', profileUploads.single('profilepic'), async (req, res, next) => {
+    try {
+        const userId = req.get('userId')
+
+        if (req.file) {
+            const userDoc = await userModel.findOneAndUpdate({
+                _id: userId
+            }, {
+                $set: { profilepicture: req.file.filename }
+            }, {
+                new: true
+            })
+
+            if (userDoc) {
+                return res.sendStatus(200)
+            }
+            else {
+                return res.sendStatus(404)
+            }
+        }
+        else {
+            return res.status(404).json({
+                message: "Image not received"
+            })
         }
     }
     catch (e) {

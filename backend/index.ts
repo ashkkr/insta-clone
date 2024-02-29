@@ -6,6 +6,7 @@ import feedRouter from "./routes/feed";
 import postRouter from "./routes/createpost";
 import profileRouter from "./routes/profilepage";
 import postInteractionRouter from "./routes/post";
+import followRouter from "./routes/follow";
 
 const errorHandler = async (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -29,6 +30,7 @@ app.use('/feed', feedRouter)
 app.use('/create', postRouter)
 app.use('/profile', profileRouter)
 app.use('/post', postInteractionRouter)
+app.use('/user', followRouter)
 app.use(errorHandler);
 
 mongoose.connect('mongodb+srv://ashutoshsangra:4xj7hdS43aAv70PZ@cluster0.4ucnbnd.mongodb.net/',

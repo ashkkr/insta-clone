@@ -3,15 +3,18 @@ import { profileDetails, profileimageurl } from "../atoms/atoms";
 import { useEffect, useState } from "react";
 import { ProfileInterface } from "../interfaces/userInterfaces";
 
-export function useProfileDetails() {
+export function useProfileDetails(profileId: string) {
     const [profileDetailsValue, setProfileDetails] = useRecoilState(profileDetails);
     const [profileDataurl, setProfileDataurl] = useRecoilState(profileimageurl)
 
     useEffect(() => {
+        if (profileId == "me" || profileId == "") profileId = localStorage.getItem('userId') ?? ""
+
         fetch('http://localhost:3000/profile/profiledetails', {
             method: 'GET',
             headers: {
-                "userId": localStorage.getItem('userId') ?? ""
+                "userId": localStorage.getItem('userId') ?? "",
+                "profileId": profileId
             }
         })
             .then(res => {
@@ -28,6 +31,7 @@ export function useProfileDetails() {
         fetch('http://localhost:3000/profile/profileimage', {
             method: 'GET',
             headers: {
+                "profileId": profileId ?? "",
                 "userId": localStorage.getItem('userId') ?? ""
             }
         })

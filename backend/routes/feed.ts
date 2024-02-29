@@ -3,6 +3,7 @@ import { commentModel, postModel, userModel } from "../schemas/authSchema";
 import { FeedPostDetails } from "../interfaces/postinterfaces";
 const feedRouter = express.Router()
 
+// has to be reviewed
 feedRouter.get('/getfeed', async (req, res, next) => {
     try {
         const userId = req.get('userId')
@@ -27,7 +28,7 @@ feedRouter.get('/getfeed', async (req, res, next) => {
                     const singleFeed: FeedPostDetails = {
                         username: userDet?.username ?? "",
                         commentCount: numOfComments,
-                        isUserFollowed: true,
+                        isUserFollowed: true, // check
                         postId: topFivePosts[i]._id.toString(),
                         caption: topFivePosts[i].caption,
                         userId: topFivePosts[i].userId.toString(),
@@ -59,8 +60,5 @@ feedRouter.get('/getfeed', async (req, res, next) => {
     }
 })
 
-feedRouter.post('/likepost', async (req, res) => {
-
-})
 
 export default feedRouter;

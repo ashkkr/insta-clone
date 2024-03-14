@@ -15,7 +15,7 @@ feedRouter.get('/getfeed', async (req, res, next) => {
             })
 
             const topFivePosts = await postModel.find({
-                // userId: { $in: listOfFollowing }
+                userId: { $in: listOfFollowing }
             }).limit(5)
 
             if (topFivePosts) {

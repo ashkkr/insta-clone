@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { loginInterface, signupInterface } from "../interfaces/authInterfaces";
-import { ProfileInterface } from "../interfaces/userInterfaces";
+import { ProfileInterface, SuggestUserInterface } from "../interfaces/userInterfaces";
 import { FullPostDetails, MetaPostDataInterface, PostDataInterface, ProfileTuple } from "../interfaces/postinterfaces";
 
 export const inputOutlineColor = atom({
@@ -119,4 +119,9 @@ export const modalPostImageDataUrl = atom<string>({
 export const modalProfilePic = atom<boolean>({
     key: 'profilemodalpic',
     default: false
+})
+
+export const searchedUsers = atom<SuggestUserInterface[]>({
+    key: 'searcheduserslist',
+    default: []
 })

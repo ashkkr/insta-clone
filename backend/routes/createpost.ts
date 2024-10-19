@@ -1,7 +1,9 @@
 import express from "express"
 import multer from "multer"
-import { postModel } from "../schemas/authSchema";
+import { postModel, userModel } from "../schemas/authSchema";
 import { PostDataBackendInterface } from "../interfaces/postinterfaces";
+import { Types } from "mongoose";
+import { postNotifModel } from "../schemas/notifSchema";
 
 const postRouter = express.Router()
 const uploadPostImage = multer({
@@ -25,6 +27,8 @@ postRouter.post('/createpost', uploadPostImage.single('postimage'), async (req, 
             const newpost = new postModel(newpostobject)
             await newpost.save()
 
+            postNotification(userId, createdAt, newpost._id);
+
             return res.json({
                 message: "Post created successfully"
             })
@@ -40,4 +44,26 @@ postRouter.post('/createpost', uploadPostImage.single('postimage'), async (req, 
 });
 
 export default postRouter;
+
+async function postNotification(userId: string, createdAt: string, postId: Types.ObjectId) {
+    const userdetails = await userModel.findOne({
+        _id: userId
+    })
+
+    userdetails?.followers.forEach(async (val) => {
+        if (val._id == undefined) return;
+
+        const notifDetails: NotificationInterface = {
+            userId: val.toString(),
+            actionUserId: userId,
+            actionUsername: userdetails.username,
+            action: 'NEWPOST',
+            actionTime: createdAt,
+            postId: postId.toString(),
+            postLink: ""
+        }
+        const newNotif = new postNotifModel(notifDetails)
+        await newNotif.save()
+    })
+}
 

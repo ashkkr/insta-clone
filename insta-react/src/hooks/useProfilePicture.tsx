@@ -28,7 +28,7 @@ export function useProfilePicture() {
 
 function fetchProfilePicture(profileId: string) {
     return new Promise<string>((res, rej) => {
-        fetch('http://localhost:3000/profile/profileimage', {
+        fetch('https://api2.coderswims.xyz/profile/profileimage', {
             method: 'GET',
             headers: {
                 'userId': localStorage.getItem('userId') ?? "",

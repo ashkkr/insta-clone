@@ -10,7 +10,7 @@ export function useProfileDetails(profileId: string) {
     useEffect(() => {
         if (profileId == "me" || profileId == "") profileId = localStorage.getItem('userId') ?? ""
 
-        fetch('http://localhost:3000/profile/profiledetails', {
+        fetch('https://api2.coderswims.xyz/profile/profiledetails', {
             method: 'GET',
             headers: {
                 "userId": localStorage.getItem('userId') ?? "",
@@ -28,7 +28,7 @@ export function useProfileDetails(profileId: string) {
                 console.error(e)
             })
 
-        fetch('http://localhost:3000/profile/profileimage', {
+        fetch('https://api2.coderswims.xyz/profile/profileimage', {
             method: 'GET',
             headers: {
                 "profileId": profileId ?? "",

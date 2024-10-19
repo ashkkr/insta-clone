@@ -39,7 +39,7 @@ mongoose.connect('mongodb+srv://ashutoshsangra:4xj7hdS43aAv70PZ@cluster0.4ucnbnd
     { dbName: 'insta-clone' })
     .then((value) => {
         console.log('Connection to mongodb created')
-        app.listen(3000, () => {
+        app.listen(3001, () => {
             console.log(`Application is listening on port 3000`);
         });
     })

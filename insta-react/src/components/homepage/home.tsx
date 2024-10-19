@@ -230,7 +230,7 @@ function CreateCaption() {
             imageFormData.append('postimage', imagefile)
             imageFormData.append('postdata', JSON.stringify(postdata));
 
-            fetch("http://localhost:3000/create/createpost", {
+            fetch("https://api2.coderswims.xyz/create/createpost", {
                 method: "POST",
                 body: imageFormData,
                 headers: {

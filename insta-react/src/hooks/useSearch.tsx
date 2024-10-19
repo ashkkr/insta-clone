@@ -11,7 +11,7 @@ export function useSearch() {
     const setSuggestUsers = useSetRecoilState(searchedUsers)
 
     const searchUser = (searchText: string) => {
-        fetch(`http://localhost:3000/search/user?searchtext=${searchText}`, {
+        fetch(`https://api2.coderswims.xyz/search/user?searchtext=${searchText}`, {
             method: 'GET'
         })
             .then((res) => {

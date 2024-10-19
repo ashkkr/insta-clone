@@ -12,7 +12,7 @@ export function useGetSuggestedUsers() {
     const [suggestUsersVal, setSuggestUsers] = useState<SuggestUserInterface[]>([])
 
     const followUser = (userId: string, setFollowed: React.Dispatch<React.SetStateAction<boolean>>) => {
-        fetch('http://localhost:3000/user/follow', {
+        fetch('https://api2.coderswims.xyz/user/follow', {
             method: "POST",
             body: JSON.stringify({
                 "userId": userId
@@ -34,7 +34,7 @@ export function useGetSuggestedUsers() {
     }
 
     const unfollowUser = (userId: string, setFollowed: React.Dispatch<React.SetStateAction<boolean>>) => {
-        fetch('http://localhost:3000/user/unfollow', {
+        fetch('https://api2.coderswims.xyz/user/unfollow', {
             method: "POST",
             body: JSON.stringify({
                 "userId": userId
@@ -56,7 +56,7 @@ export function useGetSuggestedUsers() {
     }
 
     useEffect(() => {
-        fetch('http://localhost:3000/user/suggestusers', {
+        fetch('https://api2.coderswims.xyz/user/suggestusers', {
             method: 'GET',
             headers: {
                 'userId': localStorage.getItem('userId') ?? ""

@@ -6,7 +6,7 @@ export function useLikeUnlikePost(postId: string, setPostLiked: React.Dispatch<R
             //unliking post
             setPostLiked(false)
             setNumLikes(numLikes - 1)
-            fetch('http://localhost:3000/post/unlikepost', {
+            fetch('https://api2.coderswims.xyz/post/unlikepost', {
                 method: "POST",
                 body: JSON.stringify({
                     postId: postId
@@ -21,7 +21,7 @@ export function useLikeUnlikePost(postId: string, setPostLiked: React.Dispatch<R
             // liking  post
             setPostLiked(true)
             setNumLikes(numLikes + 1)
-            fetch('http://localhost:3000/post/likepost', {
+            fetch('https://api2.coderswims.xyz/post/likepost', {
                 method: "POST",
                 body: JSON.stringify({
                     postId: postId

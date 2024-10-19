@@ -17,7 +17,7 @@ function LoginCard() {
     const [logindata, setlogin] = useRecoilState(loginForm)
 
     const handleSubmit = () => {
-        fetch('http://localhost:3000/auth/login', {
+        fetch('https://api2.coderswims.xyz/auth/login', {
             method: "POST",
             body: JSON.stringify(logindata),
             headers: {

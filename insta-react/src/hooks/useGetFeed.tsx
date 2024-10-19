@@ -18,7 +18,7 @@ export function useGetFeed() {
     const { updateProfiles } = useProfilePicture()
 
     const refreshFeed = () => {
-        fetch('http://localhost:3000/feed/getfeed', {
+        fetch('https://api2.coderswims.xyz/feed/getfeed', {
             method: "GET",
             headers: {
                 'userId': localStorage.getItem('userId') ?? ""

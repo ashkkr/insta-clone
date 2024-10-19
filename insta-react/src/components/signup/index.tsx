@@ -35,10 +35,11 @@ const validateInput = (signupdata: signupInterface, inputvalidateState: Object, 
 }
 
 function SignUp() {
-    return <Box position="relative" display="flex" flexDirection="column" gap="4" maxWidth="300px" margin="auto" top="15vh">
-        <SignupBody></SignupBody>
-        <LoginBox></LoginBox>
-    </Box>
+    return <>
+        <Box position="relative" display="flex" flexDirection="column" gap="4" maxWidth="300px" margin="auto" top="15vh">
+            <SignupBody></SignupBody>
+            <LoginBox></LoginBox>
+        </Box></>
 }
 
 function SignupBody() {
@@ -50,7 +51,7 @@ function SignupBody() {
         console.log("outside")
         if (Object.values(inputState).every(val => val === true)) {
             console.log("inside this")
-            fetch('http://localhost:3000/auth/signup', {
+            fetch('https://api2.coderswims.xyz/auth/signup', {
                 method: "POST",
                 body: JSON.stringify(signupdata),
                 headers: {

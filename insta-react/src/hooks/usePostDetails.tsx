@@ -33,7 +33,7 @@ export function imageToDataUrl<T extends PostImageInterface>(data: Array<T>) {
     const completionPromise = new Promise<void>((res, rej) => {
         var countOfImages = data.length
         data.forEach((val) => {
-            fetch('http://localhost:3000/profile/postimage', {
+            fetch('https://api2.coderswims.xyz/profile/postimage', {
                 method: "POST",
                 body: JSON.stringify({
                     imagepath: val.imagePath
@@ -72,7 +72,7 @@ export function usePostDetails(userId: string) {
     const [profileposts, setprofileposts] = useRecoilState(profilePosts)
     useEffect(() => {
         if (userId == "me" || userId == "") userId = localStorage.getItem('userId') ?? ""
-        fetch("http://localhost:3000/profile/myposts", {
+        fetch("https://api2.coderswims.xyz/profile/myposts", {
             method: 'GET',
             headers: {
                 "userId": userId ?? ""
@@ -106,7 +106,7 @@ async function getCommentPicDetails(data: FullPostDetails): Promise<commentPicIn
         if (data.comments.length == 0) res(updatedComments)
         data.comments.forEach((val) => {
             //fetching comment profile pictures
-            fetch('http://localhost:3000/profile/profileimage', {
+            fetch('https://api2.coderswims.xyz/profile/profileimage', {
                 method: 'GET',
                 headers: {
                     'userId': localStorage.getItem('userId') ?? "",
@@ -146,7 +146,7 @@ export function usePostFullDetails(postId: string, username: string) {
     const setPostFullDetails = useSetRecoilState(postFullDetails)
 
     const refreshPost = () => {
-        fetch('http://localhost:3000/profile/fullpostdetails?' + new URLSearchParams({
+        fetch('https://api2.coderswims.xyz/profile/fullpostdetails?' + new URLSearchParams({
             postId: postId
         }), {
             method: 'GET',

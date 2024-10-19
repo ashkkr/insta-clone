@@ -6,7 +6,7 @@ export function useHandleProfilePic() {
     const toast = useToast()
     const setProfilePicModal = useSetRecoilState(modalProfilePic)
     const deleteProfilePic = () => {
-        fetch('http://localhost:3000/profile/deleteprofilepic', {
+        fetch('https://api2.coderswims.xyz/profile/deleteprofilepic', {
             method: 'DELETE',
             headers: {
                 'userId': localStorage.getItem('userId') ?? ""
@@ -40,7 +40,7 @@ export function useHandleProfilePic() {
             const formData = new FormData()
             formData.append('profilepic', e.target.files[0])
 
-            fetch('http://localhost:3000/profile/setprofilepicture', {
+            fetch('https://api2.coderswims.xyz/profile/setprofilepicture', {
                 method: 'POST',
                 body: formData,
                 headers: {

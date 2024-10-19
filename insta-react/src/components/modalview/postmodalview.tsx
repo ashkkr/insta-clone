@@ -88,7 +88,7 @@ function CommentFooter() {
     }
 
     const handleCommentSubmit = () => {
-        fetch('http://localhost:3000/post/addcomment', {
+        fetch('https://api2.coderswims.xyz/post/addcomment', {
             method: "POST",
             body: JSON.stringify({
                 postId: postFullDetailsVal.postId,
@@ -155,7 +155,7 @@ function EachComment(props: any) {
             setCommentLike(!commentLiked)
             setNumLikes(numLikes - 1)
 
-            fetch('http://localhost:3000/post/unlikecomment', {
+            fetch('https://api2.coderswims.xyz/post/unlikecomment', {
                 method: "POST",
                 body: JSON.stringify({
                     postId: postDetailVal.postId,
@@ -172,7 +172,7 @@ function EachComment(props: any) {
             setCommentLike(!commentLiked)
             setNumLikes(numLikes + 1)
 
-            fetch('http://localhost:3000/post/likecomment', {
+            fetch('https://api2.coderswims.xyz/post/likecomment', {
                 method: "POST",
                 body: JSON.stringify({
                     postId: postDetailVal.postId,

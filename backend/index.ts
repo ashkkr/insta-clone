@@ -21,7 +21,10 @@ const errorHandler = async (err: Error, req: Request, res: Response, next: NextF
             message: "Some server side error occurred"
         })
     }
-}
+};
+
+
+// adding a comment to test github widgets
 
 const app = express();
 app.use(cors());
